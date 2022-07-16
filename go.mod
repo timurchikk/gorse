@@ -38,7 +38,7 @@ require (
 	github.com/spf13/cobra v0.0.7
 	github.com/spf13/viper v1.10.1
 	github.com/steinfletcher/apitest v1.5.11
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.1
 	github.com/thoas/go-funk v0.9.2
 	go.mongodb.org/mongo-driver v1.5.1
 	go.uber.org/atomic v1.9.0
@@ -57,6 +57,13 @@ require (
 	modernc.org/sortutil v1.1.0
 	modernc.org/sqlite v1.17.3
 	moul.io/zapgorm2 v1.1.3
+)
+
+require (
+	github.com/go-logr/logr v1.2.3 // indirect
+	github.com/go-logr/stdr v1.2.2 // indirect
+	go.opentelemetry.io/otel v1.8.0 // indirect
+	go.opentelemetry.io/otel/trace v1.8.0 // indirect
 )
 
 require (
