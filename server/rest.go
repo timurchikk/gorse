@@ -77,8 +77,11 @@ func (s *RestServer) StartHttpServer(container *restful.Container) {
 }
 
 func (s *RestServer) LogFilter(req *restful.Request, resp *restful.Response, chain *restful.FilterChain) {
-	// generate request id
-	requestId := uuid.New().String()
+	// generate request id if not exists
+	requestId := req.HeaderParameter("X-Request-Id")
+	if requestId == "" {
+		requestId = uuid.New().String()
+	}
 	resp.AddHeader("X-Request-ID", requestId)
 
 	start := time.Now()
