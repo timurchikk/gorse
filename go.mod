@@ -41,6 +41,10 @@ require (
 	github.com/stretchr/testify v1.7.1
 	github.com/thoas/go-funk v0.9.2
 	go.mongodb.org/mongo-driver v1.5.1
+	go.opentelemetry.io/otel v1.8.0
+	go.opentelemetry.io/otel/exporters/jaeger v1.8.0
+	go.opentelemetry.io/otel/sdk v1.8.0
+	go.opentelemetry.io/otel/trace v1.8.0
 	go.uber.org/atomic v1.9.0
 	go.uber.org/zap v1.21.0
 	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17
@@ -60,13 +64,6 @@ require (
 )
 
 require (
-	github.com/go-logr/logr v1.2.3 // indirect
-	github.com/go-logr/stdr v1.2.2 // indirect
-	go.opentelemetry.io/otel v1.8.0 // indirect
-	go.opentelemetry.io/otel/trace v1.8.0 // indirect
-)
-
-require (
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a // indirect
@@ -77,6 +74,8 @@ require (
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dzwvip/oracle v1.2.1
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
+	github.com/go-logr/logr v1.2.3 // indirect
+	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-openapi/jsonpointer v0.19.3 // indirect
 	github.com/go-openapi/jsonreference v0.19.3 // indirect
 	github.com/go-openapi/spec v0.19.5 // indirect

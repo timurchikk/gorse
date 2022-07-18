@@ -27,6 +27,11 @@ import (
 	"github.com/spf13/viper"
 	"github.com/zhenghaoz/gorse/base/log"
 	"github.com/zhenghaoz/gorse/storage"
+	"go.opentelemetry.io/otel/exporters/jaeger"
+	"go.opentelemetry.io/otel/sdk/resource"
+	tracesdk "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.8.0"
+	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 	"reflect"
 	"strings"
@@ -353,6 +358,39 @@ func (config *OfflineConfig) GetExploreRecommend(key string) (value float64, exi
 	defer config.exploreRecommendLock.RUnlock()
 	value, exist = config.ExploreRecommend[key]
 	return
+}
+
+func (config *TracingConfig) NewTracerProvider() (trace.TracerProvider, error) {
+	if !config.EnableTracing {
+		return trace.NewNoopTracerProvider(), nil
+	}
+	switch config.ExporterType {
+	case "jaeger":
+		exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(config.CollectorEndpoint)))
+		if err != nil {
+			return nil, err
+		}
+		return tracesdk.NewTracerProvider(
+			tracesdk.WithBatcher(exp),
+			tracesdk.WithResource(resource.NewWithAttributes(
+				semconv.SchemaURL,
+				semconv.ServiceNameKey.String("gorse"),
+			)),
+		), nil
+	}
+	return nil, errors.NotSupportedf("exporter type %s", config.ExporterType)
+}
+
+func (config *TracingConfig) Equal(other *TracingConfig) bool {
+	if config == nil && other == nil {
+		return true
+	}
+	if config == nil || other == nil {
+		return false
+	}
+	return config.EnableTracing == other.EnableTracing &&
+		config.ExporterType == other.ExporterType &&
+		config.CollectorEndpoint == other.CollectorEndpoint
 }
 
 func setDefault() {

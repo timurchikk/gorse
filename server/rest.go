@@ -20,7 +20,6 @@ import (
 	"github.com/araddon/dateparse"
 	restfulspec "github.com/emicklei/go-restful-openapi/v2"
 	"github.com/emicklei/go-restful/v3"
-	"github.com/google/uuid"
 	"github.com/juju/errors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/samber/lo"
@@ -76,14 +75,15 @@ func (s *RestServer) StartHttpServer(container *restful.Container) {
 		zap.Error(http.ListenAndServe(fmt.Sprintf("%s:%d", s.HttpHost, s.HttpPort), container)))
 }
 
-func (s *RestServer) LogFilter(req *restful.Request, resp *restful.Response, chain *restful.FilterChain) {
-	// generate request id if not exists
-	requestId := req.HeaderParameter("X-Request-Id")
-	if requestId == "" {
-		requestId = uuid.New().String()
-	}
-	resp.AddHeader("X-Request-ID", requestId)
+func (s *RestServer) TraceFilter(req *restful.Request, resp *restful.Response, chain *restful.FilterChain) {
+	trace := s.TraceProvider.Tracer("restful-api")
+	_, span := trace.Start(req.Request.Context(), req.SelectedRoutePath())
+	defer span.End()
+	resp.AddHeader("X-Request-ID", span.SpanContext().TraceID().String())
+	chain.ProcessFilter(req, resp)
+}
 
+func (s *RestServer) LogFilter(req *restful.Request, resp *restful.Response, chain *restful.FilterChain) {
 	start := time.Now()
 	chain.ProcessFilter(req, resp)
 	responseTime := time.Since(start)
@@ -131,6 +131,7 @@ func (s *RestServer) CreateWebService() {
 	ws := s.WebService
 	ws.Path("/api/").
 		Produces(restful.MIME_JSON).
+		Filter(s.TraceFilter).
 		Filter(s.LogFilter).
 		Filter(s.AuthFilter).
 		Filter(s.MetricsFilter)

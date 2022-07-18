@@ -16,13 +16,21 @@ package master
 
 import (
 	"fmt"
+	"github.com/ReneKroon/ttlcache/v2"
 	"github.com/emicklei/go-restful/v3"
 	"github.com/juju/errors"
+	"github.com/zhenghaoz/gorse/base"
 	"github.com/zhenghaoz/gorse/base/encoding"
 	"github.com/zhenghaoz/gorse/base/log"
 	"github.com/zhenghaoz/gorse/base/task"
+	"github.com/zhenghaoz/gorse/config"
 	"github.com/zhenghaoz/gorse/model/click"
+	"github.com/zhenghaoz/gorse/model/ranking"
+	"github.com/zhenghaoz/gorse/protocol"
 	"github.com/zhenghaoz/gorse/server"
+	"github.com/zhenghaoz/gorse/storage/cache"
+	"github.com/zhenghaoz/gorse/storage/data"
+	"go.opentelemetry.io/otel"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"math"
@@ -30,14 +38,6 @@ import (
 	"net"
 	"sync"
 	"time"
-
-	"github.com/ReneKroon/ttlcache/v2"
-	"github.com/zhenghaoz/gorse/base"
-	"github.com/zhenghaoz/gorse/config"
-	"github.com/zhenghaoz/gorse/model/ranking"
-	"github.com/zhenghaoz/gorse/protocol"
-	"github.com/zhenghaoz/gorse/storage/cache"
-	"github.com/zhenghaoz/gorse/storage/data"
 )
 
 // Master is the master node.
@@ -202,6 +202,13 @@ func (m *Master) Serve() {
 	if err = m.CacheClient.Init(); err != nil {
 		log.Logger().Fatal("failed to init database", zap.Error(err))
 	}
+
+	// create trace provider
+	m.TraceProvider, err = m.Config.Tracing.NewTracerProvider()
+	if err != nil {
+		log.Logger().Fatal("failed to create trace provider", zap.Error(err))
+	}
+	otel.SetTracerProvider(m.TraceProvider)
 
 	m.RestServer.HiddenItemsManager = server.NewHiddenItemsManager(&m.RestServer)
 	m.RestServer.PopularItemsCache = server.NewPopularItemsCache(&m.RestServer)
