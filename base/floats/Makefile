@@ -2,7 +2,7 @@ SOURCES = src/munit.c src/simd_test.c
 
 ifeq ($(shell uname -m),x86_64)
 	SOURCES += src/simd_amd64.c
-	CFLAGS = -mavx -mfma
+	CFLAGS = -mavx -mfma -mavx512f -mavx512dq
 endif
 
 OBJECTS		= $(SOURCES:.c=.o)
