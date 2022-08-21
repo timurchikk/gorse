@@ -306,6 +306,21 @@ void munit_errorf_ex(const char* filename, int line, const char* format, ...);
   } while (0) \
   MUNIT_POP_DISABLE_MSVC_C4127_
 
+#define munit_assert_float_equal(a, b, precision) \
+  do { \
+    const float munit_tmp_a_ = (a); \
+    const float munit_tmp_b_ = (b); \
+    const float munit_tmp_diff_ = ((munit_tmp_a_ - munit_tmp_b_) < 0) ? \
+      -(munit_tmp_a_ - munit_tmp_b_) : \
+      (munit_tmp_a_ - munit_tmp_b_); \
+    if (MUNIT_UNLIKELY(munit_tmp_diff_ > 1e-##precision)) { \
+      munit_errorf("assertion failed: %s == %s (%0." #precision "g == %0." #precision "g)", \
+		   #a, #b, munit_tmp_a_, munit_tmp_b_); \
+    } \
+    MUNIT_PUSH_DISABLE_MSVC_C4127_ \
+  } while (0) \
+  MUNIT_POP_DISABLE_MSVC_C4127_
+
 #include <string.h>
 #define munit_assert_string_equal(a, b) \
   do { \
@@ -326,6 +341,25 @@ void munit_errorf_ex(const char* filename, int line, const char* format, ...);
     if (MUNIT_UNLIKELY(strcmp(munit_tmp_a_, munit_tmp_b_) == 0)) { \
       munit_errorf("assertion failed: string %s != %s (\"%s\" == \"%s\")", \
                    #a, #b, munit_tmp_a_, munit_tmp_b_); \
+    } \
+    MUNIT_PUSH_DISABLE_MSVC_C4127_ \
+  } while (0) \
+  MUNIT_POP_DISABLE_MSVC_C4127_
+
+#define munit_assert_floats_equal(size, a, b) \
+  do { \
+    const float* munit_tmp_a_ = (const float*) (a); \
+    const float* munit_tmp_b_ = (const float*) (b); \
+    const size_t munit_tmp_size_ = (size); \
+    if (MUNIT_UNLIKELY(memcmp(munit_tmp_a_, munit_tmp_b_, munit_tmp_size_ * sizeof(float))) != 0) { \
+      size_t munit_tmp_pos_; \
+      for (munit_tmp_pos_ = 0 ; munit_tmp_pos_ < munit_tmp_size_ ; munit_tmp_pos_++) { \
+        if (munit_tmp_a_[munit_tmp_pos_] != munit_tmp_b_[munit_tmp_pos_]) { \
+          munit_errorf("assertion failed: floats %s == %s (%f == %f), at offset %" MUNIT_SIZE_MODIFIER "u", \
+                       #a, #b, munit_tmp_a_[munit_tmp_pos_], munit_tmp_b_[munit_tmp_pos_], munit_tmp_pos_); \
+          break; \
+        } \
+      } \
     } \
     MUNIT_PUSH_DISABLE_MSVC_C4127_ \
   } while (0) \

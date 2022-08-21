@@ -5,8 +5,9 @@ ifeq ($(shell uname -m),x86_64)
 	CFLAGS = -mavx -mfma
 endif
 
-OBJECTS	= $(SOURCES:.c=.o)
-EXECUTE	= src/simd_test
+OBJECTS		= $(SOURCES:.c=.o)
+DEPENDENCES	= $(SOURCES:.c=.d)
+EXECUTE		= src/simd_test
 
 $(EXECUTE): $(OBJECTS) 
 	$(CC) $(OBJECTS) -o $(EXECUTE)
@@ -15,4 +16,13 @@ test: $(EXECUTE)
 	./${EXECUTE}
 
 clean:
-	rm $(OBJECTS) $(EXECUTE)
+	rm $(OBJECTS) $(DEPENDENCES) $(EXECUTE)
+
+-include $(DEPENDENCES)
+
+%.d: %.c
+	@set -e; \
+	rm -f $@; \
+	$(CC) $(CFLAGS) -MM -MT $(@:.d=.o) $< > $@.$$$$; \
+	sed 's,\($*\)\.o[ :]*,\1.o $@: ,g' $@.$$$$ > $@; \
+	rm -f $@.$$$$
