@@ -3,6 +3,8 @@ SOURCES = src/munit.c src/simd_test.c
 ifeq ($(shell uname -m),x86_64)
 	SOURCES += src/simd_amd64.c
 	CFLAGS = -mavx -mfma -mavx512f -mavx512dq
+else ifeq ($(shell uname -m),aarch64)
+	SOURCES += src/simd_arm64.c
 endif
 
 OBJECTS		= $(SOURCES:.c=.o)
