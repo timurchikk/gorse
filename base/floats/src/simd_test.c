@@ -3,14 +3,6 @@
 
 const size_t kVectorLength = 63;
 
-/* AVX and FMA */
-
-void _mm256_mul_const_add_to(float *a, float *b, float *c, int64_t n);
-void _mm256_mul_const_to(float *a, float *b, float *c, int64_t n);
-void _mm256_mul_const(float *a, float *b, int64_t n);
-void _mm256_mul_to(float *a, float *b, float *c, int64_t n);
-void _mm256_dot(float *a, float *b, int64_t n, float *ret);
-
 /* no simd */
 
 void mul_const_add_to(float *a, float *b, float *c, int64_t n)
@@ -63,6 +55,18 @@ int rand_float(float *a, int64_t n)
 }
 
 #if defined(__x86_64__)
+
+void _mm256_mul_const_add_to(float *a, float *b, float *c, int64_t n);
+void _mm256_mul_const_to(float *a, float *b, float *c, int64_t n);
+void _mm256_mul_const(float *a, float *b, int64_t n);
+void _mm256_mul_to(float *a, float *b, float *c, int64_t n);
+void _mm256_dot(float *a, float *b, int64_t n, float *ret);
+
+void _mm512_mul_const_add_to(float *a, float *b, float *c, int64_t n);
+void _mm512_mul_const_to(float *a, float *b, float *c, int64_t n);
+void _mm512_mul_const(float *a, float *b, int64_t n);
+void _mm512_mul_to(float *a, float *b, float *c, int64_t n);
+void _mm512_dot(float *a, float *b, int64_t n, float *ret);
 
 MunitResult mm256_mul_const_add_to_test(const MunitParameter params[], void *user_data_or_fixture)
 {
@@ -210,7 +214,7 @@ MunitTest mm512_tests[] = {
 static const MunitSuite mm512_suite = {
     "mm512_", mm512_tests, NULL, 1, MUNIT_SUITE_OPTION_NONE};
 
-int main(int argc, char const *argv[])
+int main(int argc, char* const argv[MUNIT_ARRAY_PARAM(argc + 1)])
 {
   munit_suite_main(&mm256_suite, NULL, argc, argv);
   munit_suite_main(&mm512_suite, NULL, argc, argv);
