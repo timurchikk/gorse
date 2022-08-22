@@ -1,15 +1,16 @@
-SOURCES = src/munit.c src/simd_test.c
+SOURCES = munit.c floats_test.c
 
 ifeq ($(shell uname -m),x86_64)
-	SOURCES += src/simd_amd64.c
-	CFLAGS = -mavx -mfma -mavx512f -mavx512dq
+	SOURCES += floats_avx.c floats_avx512.c
+	CFLAGS = -O3 -mavx -mfma -mavx512f -mavx512dq
 else ifeq ($(shell uname -m),aarch64)
-	SOURCES += src/simd_arm64.c
+	SOURCES += floats_neon.c
+	CFLAGS = -O3
 endif
 
 OBJECTS		= $(SOURCES:.c=.o)
 DEPENDENCES	= $(SOURCES:.c=.d)
-EXECUTE		= src/simd_test
+EXECUTE		= floats_test
 
 $(EXECUTE): $(OBJECTS) 
 	$(CC) $(OBJECTS) -o $(EXECUTE)

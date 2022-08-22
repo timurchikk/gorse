@@ -2,6 +2,7 @@
 #include "math.h"
 
 const size_t kVectorLength = 63;
+const size_t kIteration = 1;
 
 /* no simd */
 
@@ -139,7 +140,7 @@ MunitTest mm256_tests[] = {
     {"dot", mm256_dot_test, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL}};
 
 static const MunitSuite mm256_suite = {
-    "mm256_", mm256_tests, NULL, 1, MUNIT_SUITE_OPTION_NONE};
+    "mm256_", mm256_tests, NULL, kIteration, MUNIT_SUITE_OPTION_NONE};
 
 MunitResult mm512_mul_const_add_to_test(const MunitParameter params[], void *user_data_or_fixture)
 {
@@ -212,7 +213,7 @@ MunitTest mm512_tests[] = {
     {"dot", mm512_dot_test, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL}};
 
 static const MunitSuite mm512_suite = {
-    "mm512_", mm512_tests, NULL, 1, MUNIT_SUITE_OPTION_NONE};
+    "mm512_", mm512_tests, NULL, kIteration, MUNIT_SUITE_OPTION_NONE};
 
 int main(int argc, char* const argv[MUNIT_ARRAY_PARAM(argc + 1)])
 {
@@ -300,7 +301,7 @@ MunitTest vtests[] = {
     {"dot", vdot_test, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL}};
 
 static const MunitSuite vsuite = {
-    "v", vtests, NULL, 1, MUNIT_SUITE_OPTION_NONE};
+    "v", vtests, NULL, kIteration, MUNIT_SUITE_OPTION_NONE};
 
 int main(int argc, char* const argv[MUNIT_ARRAY_PARAM(argc + 1)])
 {
